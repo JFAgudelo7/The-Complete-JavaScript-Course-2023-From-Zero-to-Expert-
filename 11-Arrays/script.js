@@ -61,9 +61,13 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = "";
-  movements.forEach(function (mov, i) {
+
+  //Slice is used to create a copy of the original array
+  const movs = sort ? movements.slice().sort((a,b) => a - b) : movements;
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     const html = `
     <div class="movements__row">
@@ -182,6 +186,74 @@ btnTransfer.addEventListener('click', function(e){
   }
 });
 
+/////////////////////////////////////////////////
+// findIndex Section
+/////////////////////////////////////////////////
+btnClose.addEventListener('click', function(e){
+  e.preventDefault();
+  
+  
+  if(inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin){
+    const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+
+    // Delete account
+    accounts.splice(index, 1);
+
+    //Hide UI
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+  
+});
+
+/////////////////////////////////////////////////
+// findIndex Section
+/////////////////////////////////////////////////
+btnClose.addEventListener('click', function(e){
+  e.preventDefault();
+  
+  
+  if(inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin){
+    const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+
+    // Delete account
+    accounts.splice(index, 1);
+
+    //Hide UI
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+  
+})
+
+
+/////////////////////////////////////////////////
+// Some  Section
+/////////////////////////////////////////////////
+btnLoan.addEventListener('click', function(e){
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount*0.1)){
+    //Add movement
+    currentAccount.movements.push(amount);
+
+    //Update UI
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+})
+
+/////////////////////////////////////////////////
+// Sort  Section
+/////////////////////////////////////////////////
+let sorted = false;
+btnSort.addEventListener('click', function(e){
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+})
 
 
 /////////////////////////////////////////////////
@@ -292,3 +364,38 @@ const account = accounts.find(acc => acc.owner === 'Jessica Davis');
 console.log(account);
 
 
+
+// Flat and Flatmap Function
+console.warn(":::::::::Flatmap FUNCTION::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+const arr = [[1,2,3],[4,5,6]];
+console.log(arr.flat());
+
+const arrDeep = [[[1,2],3],[4,[5,6],7,8]];
+console.log(arrDeep.flat(1));
+console.log(arrDeep.flat(2));
+
+const overallBalance = accounts.map(acc => acc.movements).flat().reduce((acc, mov) => acc + mov, 0);
+console.log("overallBalance: " + overallBalance);
+
+console.warn("::::::::: Flatmap FUNCTION::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+const overallBalance2 = accounts.flatMap(acc => acc.movements).reduce((acc, mov) => acc + mov, 0);
+console.log("overallBalance2: " + overallBalance2);
+
+// Sorting Arrays
+console.warn(":::::::::Sorting Arrays::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+
+//sort works for strings
+const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort());
+console.log(owners); //Sort affects the original array
+
+//For numbers
+//Ascending... for descending, just inver the return values
+movements.sort((a,b) => {
+  if (a>b) return 1;
+  if(a<b) return -1;
+});
+console.log(movements);
+//fORM 2
+movements.sort((a,b) => a -b );
+console.log(movements);
