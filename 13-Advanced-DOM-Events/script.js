@@ -143,6 +143,50 @@ nav.addEventListener('mouseover', handleHover.bind(0.5));
 
 nav.addEventListener('mouseout', handleHover.bind(1));
 
+// ----------------------------------------------
+// Sticky Navigation
+/*
+const initialCoords = section1.getBoundingClientRect();
+
+window.addEventListener('scroll', function(e){
+  console.log(window.scrollY);
+
+  if (this.window.scrollY > initialCoords.top) nav.classList.add('sticky') 
+  else nav.classList.remove('sticky');
+})*/
+
+// Now the sticky navigation using the Intersection Observer API
+/*
+const obsCallback = function(entries, observer){
+  entries.forEach(entry => {
+    console.log(entry)
+  })
+};
+const obsOptions = {
+  root: null,
+  threshold: [0, 0.2]
+};
+
+const observer = new IntersectionObserver(obsCallback, obsOptions);
+observer.observe(section1);*/
+
+const _header = document.querySelector('.header');
+const navHeight = nav.getBoundingClientRect().height;
+const stickyNav = function(entries){
+  const [entry] = entries; //This is the same that use entries[0];
+
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+}
+
+const _headerObservver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+
+_headerObservver.observe(_header);
+
 //--------------------------------------------------------------------------------------------
 //----------------------------------------------SECTIONS
 
@@ -155,6 +199,7 @@ message.classList.add("cookie-message");
 message.innerHTML = `We use cookies fot improve functionality and analytics, <button class="btn btn--close-cookie">Got it!</button>`;
 
 header.append(message);
+
 
 // ----------------------------------------------
 // Delete Elements
